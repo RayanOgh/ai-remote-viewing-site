@@ -1,0 +1,85 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Hash-Verified Remote Viewing</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+      background: #f4f4f4;
+      color: #333;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    input, textarea, button {
+      width: 100%;
+      margin: 1rem 0;
+      padding: 0.75rem;
+      font-size: 1rem;
+    }
+    .result {
+      padding: 1rem;
+      border-radius: 5px;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>AI Hash-Verified Remote Viewing</h1>
+    <p>Target Number: <strong id="targetNumber"></strong></p>
+    <p>Enter your intuitive target word and check if it matches the hash of the session’s hidden object.</p>
+    <label for="input">Your Word:</label>
+    <input type="text" id="input" placeholder="Enter your perceived word" />
+    <button onclick="checkHash()">Verify Hash</button>
+
+    <div id="result" class="result" style="display: none;"></div>
+  </div>
+
+  <script>
+    const targets = [
+      { number: "T-1001", object: "pyramid" },
+      { number: "T-1002", object: "submarine" },
+      { number: "T-1003", object: "volcano" },
+      { number: "T-1004", object: "starfish" },
+      { number: "T-1005", object: "compass" }
+    ];
+    const selected = targets[Math.floor(Math.random() * targets.length)];
+    document.getElementById('targetNumber').innerText = selected.number;
+
+    async function checkHash() {
+      const input = document.getElementById('input').value.trim().toLowerCase();
+      const encoder = new TextEncoder();
+      const data = encoder.encode(input);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+      const encoder2 = new TextEncoder();
+      const targetData = encoder2.encode(selected.object);
+      const targetBuffer = await crypto.subtle.digest('SHA-256', targetData);
+      const targetArray = Array.from(new Uint8Array(targetBuffer));
+      const targetHash = targetArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+      const resultBox = document.getElementById('result');
+      if (hashHex === targetHash) {
+        resultBox.innerText = `✅ Match! Your word "${input}" is correct for target ${selected.number}.`;
+        resultBox.style.background = '#d4edda';
+      } else {
+        resultBox.innerText = `❌ No match. The hash of "${input}" does not match the target.`;
+        resultBox.style.background = '#f8d7da';
+      }
+      resultBox.style.display = 'block';
+    }
+  </script>
+</body>
+</html>
